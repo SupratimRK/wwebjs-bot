@@ -23,6 +23,7 @@ client.on('qr', qr => {
 client.on('ready', () => {
     console.log('Client is ready!');
     logs.push('Client is ready!');
+    qrCodeData = null; // Clear QR code data after successful authentication
 });
 
 client.on('message', message => {
