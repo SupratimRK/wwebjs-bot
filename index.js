@@ -1,8 +1,11 @@
+require('dotenv').config();
 const { Client, LocalAuth } = require('whatsapp-web.js');
 const qrcode = require('qrcode-terminal');
 const qrcodeLib = require('qrcode');
 const express = require('express');
 const cors = require('cors'); // Import cors
+const { GoogleGenerativeAI } = require('@google/generative-ai');
+
 const app = express();
 const port = process.env.PORT || 4600;
 
@@ -12,6 +15,9 @@ app.use(cors()); // Use cors middleware
 const client = new Client({
     authStrategy: new LocalAuth()
 });
+
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
 let qrCodeData = null;
 const logs = [];
@@ -28,9 +34,26 @@ client.on('ready', () => {
     qrCodeData = null; // Clear QR code data after successful authentication
 });
 
-client.on('message', message => {
+client.on('message', async message => {
     if (message.body === '!ping') {
         message.reply('pong');
+    } else {
+        try {
+            const prompt = message.body;
+            const result = await model.generateContent({
+                contents: [{ role: "user", parts: [{ text: prompt }] }],
+                systemInstruction: "You are Rick that replies on behalf of the user, Rick. Structure your reply such a way that the other person should think Rick is replying. Respond in the same language and style as the user's message.",
+                generationConfig: { temperature: 1.5 } // Increased temperature for more varied responses
+            });
+            const response = await result.response;
+            const text = response.text();
+            message.reply(text);
+            logs.push(`Received: "${prompt}" - Replied: "${text}"`);
+        } catch (error) {
+            console.error('Error generating response from Gemini API:', error);
+            logs.push(`Error generating response from Gemini API: ${error.message}`);
+            message.reply('Sorry, I could not generate a response at this time.');
+        }
     }
 });
 
