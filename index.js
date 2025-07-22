@@ -16,6 +16,9 @@ client.on('qr', qr => {
 
 client.on('ready', () => {
     console.log('Client is ready!');
+    app.listen(port, () => {
+        console.log(`Server listening at http://localhost:${port}`);
+    });
 });
 
 client.on('message', message => {
@@ -39,8 +42,8 @@ app.post('/send-message', async (req, res) => {
     }
 });
 
-client.initialize();
-
-app.listen(port, () => {
-    console.log(`Server listening at http://localhost:${port}`);
+app.get('/send-message', (req, res) => {
+    res.status(204).send(); // 204 No Content for keep-alive/ping requests
 });
+
+client.initialize();

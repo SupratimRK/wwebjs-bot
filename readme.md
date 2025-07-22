@@ -1,5 +1,3 @@
-
-
 # WhatsApp Message API Documentation
 ---
 
@@ -37,9 +35,13 @@ For more details, see the [official guide](https://wwebjs.dev/guide).
 
 `POST /send-message`
 
+`GET /send-message`
+
 ## Description
 
 Sends a WhatsApp message to a specified number.
+
+The `GET /send-message` endpoint is designed for health checks or keep-alive services. It returns a `204 No Content` status, indicating that the request was successful but there is no data to return. This prevents errors from services that might send `GET` requests to the main messaging endpoint.
 
 ## Request Body
 
