@@ -2,10 +2,12 @@ const { Client, LocalAuth } = require('whatsapp-web.js');
 const qrcode = require('qrcode-terminal');
 const qrcodeLib = require('qrcode');
 const express = require('express');
+const cors = require('cors'); // Import cors
 const app = express();
 const port = process.env.PORT || 4600;
 
 app.use(express.json());
+app.use(cors()); // Use cors middleware
 
 const client = new Client({
     authStrategy: new LocalAuth()
