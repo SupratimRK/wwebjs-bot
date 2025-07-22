@@ -103,7 +103,26 @@ app.get('/send-message', (req, res) => {
 });
 
 app.get('/health', (req, res) => {
-    res.status(200).send({ status: 'ok', uptime: process.uptime() });
+    const uptimeSeconds = process.uptime();
+    function formatUptime(seconds) {
+        const months = Math.floor(seconds / (30 * 24 * 3600));
+        seconds %= (30 * 24 * 3600);
+        const days = Math.floor(seconds / (24 * 3600));
+        seconds %= (24 * 3600);
+        const hours = Math.floor(seconds / 3600);
+        seconds %= 3600;
+        const minutes = Math.floor(seconds / 60);
+        let parts = [];
+        if (months) parts.push(`${months} month${months > 1 ? 's' : ''}`);
+        if (days) parts.push(`${days} day${days > 1 ? 's' : ''}`);
+        if (hours) parts.push(`${hours} hour${hours > 1 ? 's' : ''}`);
+        if (minutes || parts.length === 0) parts.push(`${minutes} minute${minutes !== 1 ? 's' : ''}`);
+        return parts.join(', ');
+    }
+    res.status(200).send({ 
+        status: 'ok', 
+        uptime: formatUptime(uptimeSeconds)
+    });
 });
 
 client.initialize();
