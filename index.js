@@ -101,6 +101,10 @@ app.get('/send-message', (req, res) => {
     res.status(204).send(); // 204 No Content for keep-alive/ping requests
 });
 
+app.get('/health', (req, res) => {
+    res.status(200).send({ status: 'ok', uptime: process.uptime() });
+});
+
 client.initialize();
 
 app.listen(port, () => {
